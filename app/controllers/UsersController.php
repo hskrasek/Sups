@@ -1,14 +1,31 @@
-<?php 
+<?php
+use Dingo\Api\Auth\Shield;
+use Dingo\Api\Dispatcher;
+use Dingo\Api\Http\ResponseBuilder;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Sups\Repo\v1\User\UserInterface;
+use Sups\Transformers\UserTransformer;
+
 class UsersController extends BaseController
 {
+    protected $users;
+
+    public function __construct(Dispatcher $api, Shield $auth, ResponseBuilder $response, UserInterface $users)
+    {
+        parent::__construct($api, $auth, $response);
+        $this->users = $users;
+    }
+
     public function index()
     {
-        return 'Hello World';
+        $users = $this->users->findAll();
+        return Response::make($users->getCollection());
     }
 
     public function show($id)
     {
-        return "Hello $id";
+        $user = $this->users->findById($id);
+        return Response::make($user);
     }
 
     public function store()
